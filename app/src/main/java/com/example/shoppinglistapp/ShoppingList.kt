@@ -1,9 +1,6 @@
 package com.example.shoppinglistapp
 
-import android.content.ClipData.Item
-import android.graphics.drawable.shapes.Shape
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,12 +8,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
@@ -105,10 +102,6 @@ fun ShoppingListApp(){
                         onValueChange = { itemQuantity = it },
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth().padding(16.dp),
-
-                      /*  IconButton(onClick = {itemQuantity+1}) {
-                            Icon(imageVector = Icons.Default.Add,
-                                contentDescription = "") } */
                     )
                 }
             }
@@ -119,7 +112,7 @@ fun ShoppingListApp(){
 @Composable
 fun ShoppingListItem(
     item: ShoppingItem,
-    isEditClick: () -> Unit,
+    onEditClick: () -> Unit,
     onDeleteClick: () -> Unit
 ){
     Row(modifier = Modifier.fillMaxWidth().padding(8.dp).border(
@@ -129,8 +122,21 @@ fun ShoppingListItem(
         Text(item.name, modifier = Modifier.padding(8.dp),
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold)
-    }
 
+        Text("Qty: ${item.quantity}", modifier = Modifier.padding(8.dp),
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold)
+        Row(modifier = Modifier.padding(8.dp)) {
+            IconButton(onClick = onEditClick) {
+                Icon(imageVector = Icons.Default.Edit,
+                    contentDescription = "Edit item")
+            }
+            IconButton(onClick = onDeleteClick) {
+                Icon(imageVector = Icons.Default.Delete,
+                    contentDescription = "Remove item")
+            }
+        }
+    }
 }
 
 @Preview(showBackground = true)
