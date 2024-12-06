@@ -32,7 +32,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
@@ -54,7 +53,7 @@ fun ShoppingListApp(){
         verticalArrangement = Arrangement.Center
     ) {
         Button(onClick = {showDialog = true},
-            modifier = Modifier.align(Alignment.CenterHorizontally) ) {
+            modifier = Modifier.align(Alignment.CenterHorizontally). padding(25.dp) ) {
             Text("Add Item")
         }
         LazyColumn(modifier = Modifier
@@ -62,7 +61,24 @@ fun ShoppingListApp(){
             .padding(16.dp),
         ) {
             items(sItems){
-                ShoppingListItem(it, {}, {})
+                item ->
+                if (item.isEditing) {
+                    ShoppingItemEditor(item = item,
+                        onEditComplete = { editedName, editedQuantity ->
+                            sItems = sItems.map { it.copy(isEditing = false) }
+                            val editedItem = sItems.find { item.id == it.id }
+                            editedItem?.let {
+                                it.name = editedName
+                                it.quantity = editedQuantity
+                            }
+                        })
+                } else {
+                    ShoppingListItem(item = item,
+                        onEditClick = {
+                            //finding out which edit button we clicked
+                              sItems = sItems.map { it.copy(isEditing = it.id == item.id )}
+                         },  onDeleteClick = {sItems = sItems - item})
+                }
             }
         }
     }
@@ -130,24 +146,20 @@ fun ShoppingItemEditor(item: ShoppingItem, onEditComplete: (String, Int) -> Unit
                             modifier = Modifier.wrapContentSize().padding(8.dp))
 
             BasicTextField(value = editedQuantity,
-                onValueChange = {editedQuantity = it},
-                singleLine = true,
-                modifier = Modifier.wrapContentSize()
-                    .padding(8.dp)
-                    .border(2.dp, Color.Yellow, RoundedCornerShape(4.dp))
-            )
+                            onValueChange = {editedQuantity = it},
+                            singleLine = true,
+                            modifier = Modifier.wrapContentSize()
+                                .padding(8.dp)
+                                .border(2.dp, Color.Yellow, RoundedCornerShape(4.dp))
+                )
         }
-        Button(onClick = {
-            isEditing = false
+        Button(onClick = { isEditing = false
             onEditComplete(editedName, editedQuantity.toIntOrNull() ?: 1)
         } ) {
             Text("SAVE")
         }
     }
-
 }
-
-
 
 @Composable
 fun ShoppingListItem(
@@ -157,14 +169,14 @@ fun ShoppingListItem(
 ){
     Row(modifier = Modifier.fillMaxWidth().padding(8.dp).border(
         border = BorderStroke(2.dp, Color.Green ),
-        shape = RoundedCornerShape(25)
-    )) {
+        shape = RoundedCornerShape(20)),
+        horizontalArrangement = Arrangement.SpaceBetween) {
         Text(item.name, modifier = Modifier.padding(8.dp),
-            fontSize = 16.sp,
+            fontSize = 32.sp,
             fontWeight = FontWeight.Bold)
 
         Text("Qty: ${item.quantity}", modifier = Modifier.padding(8.dp),
-            fontSize = 16.sp,
+            fontSize = 32.sp,
             fontWeight = FontWeight.Bold)
 
         Row(modifier = Modifier.padding(8.dp)) {
